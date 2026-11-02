@@ -27,7 +27,7 @@
 [INFO] -------------------------------------------------------
 [INFO] Running mn.edu.must.sqat.CourseRegistrationServiceTest
 OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.009 s -- in mn.edu.must.sqat.CourseRegistrationServiceTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.081 s -- in mn.edu.must.sqat.CourseRegistrationServiceTest
 [INFO] 
 [INFO] Results:
 [INFO] 
@@ -36,6 +36,6 @@ OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader clas
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.354 s
-[INFO] Finished at: 2026-11-02T21:54:24+08:00
+[INFO] Total time:  3.511 s
+[INFO] Finished at: 2026-11-02T22:10:47+08:00
 [INFO] ------------------------------------------------------------------------

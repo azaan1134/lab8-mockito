@@ -1,7 +1,6 @@
 package mn.edu.must.sqat;
 
-import java.util.Set;
+import java.util.List;
 
-/** Оюутны өгөгдөл. */
-public record Student(String id, String name, String email, boolean active, Set<String> completedCourses) {
-}
+/** Оюутны мэдээлэл — repository-гоос ирдэг өгөгдөл. */
+public record Student(String id, String email, boolean active, List<String> coursesTaken) {}

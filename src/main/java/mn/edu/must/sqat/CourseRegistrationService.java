@@ -1,7 +1,13 @@
 package mn.edu.must.sqat;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Хичээлд бүртгэх үйлчилгээ — Лекц 5-ын бүртгэлийн API-гийн
+ * бизнес логик, гэхдээ энэ удаад НЭГЖИЙН түвшинд.
+ * Хамаарлууд (repository, emailSender) constructor-оор ирнэ (dependency injection).
+ */
 public class CourseRegistrationService {
 
     private final StudentRepository repository;
@@ -13,44 +19,36 @@ public class CourseRegistrationService {
     }
 
     /**
-     * Оюутныг хичээлд бүртгэнэ.
-     * <ul>
-     *   <li>studentId эсвэл courseId null бол IllegalArgumentException; хамаарлуудтай харьцахгүй.</li>
-     *   <li>Оюутан олдохгүй бол "ERROR_NO_STUDENT".</li>
-     *   <li>Оюутан идэвхгүй бол "ERROR_INACTIVE_STUDENT".</li>
-     *   <li>Өмнөх холбоо хичээл дутуу бол "ERROR_PREREQUISITES".</li>
-     *   <li>Бусад тохиолдолд бүртгэлийг хадгалж, хичээлийн кодтой и-мэйл илгээж, "OK" буцаана.
-     *       И-мэйл илгээхэд алдаа гарсан ч бүртгэл хүчинтэй — "OK".</li>
-     * </ul>
-     * Алдааны тохиолдолд хадгалалт ба и-мэйл хийгдэхгүй.
+     * Бүртгэлийн үр дүн:
+     *   "OK"                    — амжилттай (бүртгэл хадгалагдаж, мэдэгдэл илгээгдэнэ)
+     *   "ERROR_NO_STUDENT"      — оюутан олдсонгүй
+     *   "ERROR_INACTIVE_STUDENT"— оюутан идэвхгүй
+     *   "ERROR_NO_COURSE"       — хичээл олдсонгүй
+     *   "ERROR_PREREQUISITES"   — өмнөх холбоо хичээл дутуу
+     * И-мэйл илгээлт АМЖИЛТГҮЙ болсон ч бүртгэл хүчинтэй хэвээр ("OK").
      */
     public String register(String studentId, String courseId) {
         if (studentId == null || courseId == null) {
-            throw new IllegalArgumentException("studentId and courseId must not be null");
+            throw new IllegalArgumentException("studentId, courseId хоёул шаардлагатай");
         }
 
-        Optional<Student> found = repository.findById(studentId);
-        if (found.isEmpty()) {
-            return "ERROR_NO_STUDENT";
-        }
-        Student student = found.get();
+        Student student = repository.findStudent(studentId);
+        if (student == null) return "ERROR_NO_STUDENT";
+        if (!student.active()) return "ERROR_INACTIVE_STUDENT";
+        if (!repository.courseExists(courseId)) return "ERROR_NO_COURSE";
 
-        if (!student.active()) {
-            return "ERROR_INACTIVE_STUDENT";
-        }
-
-        if (!student.completedCourses().containsAll(repository.getPrerequisites(courseId))) {
-            return "ERROR_PREREQUISITES";
-        }
+        List<String> missing = new ArrayList<>(repository.prerequisites(courseId));
+        missing.removeAll(student.coursesTaken());
+        if (!missing.isEmpty()) return "ERROR_PREREQUISITES";
 
         repository.saveRegistration(studentId, courseId);
 
         try {
             emailSender.send(student.email(),
                     "Бүртгэл баталгаажлаа",
-                    "Та " + courseId + " хичээлд амжилттай бүртгүүллээ.");
+                    courseId + " хичээлд амжилттай бүртгэгдлээ.");
         } catch (RuntimeException e) {
-            // и-мэйлийн алдаа бүртгэлийг цуцлахгүй
+            // Мэдэгдэл чухал боловч бүртгэлийг унагаах ёсгүй.
         }
         return "OK";
     }

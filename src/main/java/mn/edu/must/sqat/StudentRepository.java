@@ -1,13 +1,19 @@
 package mn.edu.must.sqat;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.List;
 
-/** Өгөгдлийн сан — хэрэгжүүлэлт ЗОРИУД байхгүй. */
+/**
+ * Өгөгдлийн сантай харьцах интерфейс.
+ * Лабораторид БОДИТ хэрэгжүүлэлт байхгүй — тестэд mock-оор орлуулна.
+ */
 public interface StudentRepository {
-    Optional<Student> findById(String studentId);
+    /** Оюутан олдохгүй бол null буцаана. */
+    Student findStudent(String studentId);
 
-    Set<String> getPrerequisites(String courseId);
+    boolean courseExists(String courseId);
+
+    /** Хичээлийн өмнөх холбоо хичээлүүд (байхгүй бол хоосон жагсаалт). */
+    List<String> prerequisites(String courseId);
 
     void saveRegistration(String studentId, String courseId);
 }
